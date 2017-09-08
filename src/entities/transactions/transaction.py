@@ -5,10 +5,10 @@ class Transaction(object):
     def __init__(self, graph):
 		self.graph = graph
 
-	def queryTransaction(self, query):
+	def deleteTransaction(self, query):
 		start = time.time()
 		with self.graph.session() as session:
 			with session.begin_transaction() as tx:
-				tx.run(query, data=data)
+				tx.run(query)
 		end = time.time()
-		print("Processed %s entries. %s r/s" % (len(data), round((len(data) / (end - start)),2) ))
+		print("Processed entries in %s s" (end - start))

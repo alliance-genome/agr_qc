@@ -14,7 +14,7 @@ removedb:
 	docker-compose down -v
 
 run: build
-	docker-compose up agr_loader
+	docker-compose up agr_qc
 
 bash:
 	docker-compose up agr_qc bash

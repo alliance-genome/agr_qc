@@ -5,20 +5,19 @@ class GenericTransactions(object):
 		Transaction.__init__(self, graph)
 
 	def generic_tx(self):
-		'''
-		Removes skeleton GO nodes
-		'''
 
+		#Removes skeleton nodes
 		query = """
 			MATCH (n)
-            WHERE size(keys(n))<1
-            DELETE (n)
+            WHERE size(keys(n))=1
+            DETACH DELETE (n)
 		"""
+		Transaction.deleteTransaction(self, query)
 
-        # removese all nodes that do not have any edges
+        # remove all nodes that do not have any edges
         query2 = """
 			MATCH (n)
 			WHERE size((n)--())=0
 			DELETE (n)
 		"""
-		Transaction.query_transaction(self, query)
+		Transaction.deleteTransaction(self, query2)
