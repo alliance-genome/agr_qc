@@ -1,1 +1,1 @@
-from .generic import GenericTransactions
+from .generic import GenericEntities

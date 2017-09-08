@@ -1,4 +1,4 @@
-from .aggregate_updater import AggregateUpdater
+from aggregate_updater import AggregateUpdater
 import os
 
 host = os.environ['NEO4J_HOST']

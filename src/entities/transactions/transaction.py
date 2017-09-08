@@ -11,4 +11,4 @@ class Transaction(object):
 			with session.begin_transaction() as tx:
 				tx.run(query)
 		end = time.time()
-		print("Processed entries in %s s" (end - start))
+		print("Processed entries in %s s" % (end - start))

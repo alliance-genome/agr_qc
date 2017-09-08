@@ -1,6 +1,6 @@
-from .transaction import Transaction
+from .transactions.transaction import Transaction
 
-class GenericTransactions(object):
+class GenericEntities(object):
 	def __init__(self, graph):
 		Transaction.__init__(self, graph)
 
