@@ -2,7 +2,7 @@ import time
 
 class Transaction(object):
 
-    def __init__(self, graph):
+	def __init__(self, graph):
 		self.graph = graph
 
 	def deleteTransaction(self, query):

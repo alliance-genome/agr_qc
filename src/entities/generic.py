@@ -7,17 +7,17 @@ class GenericTransactions(object):
 	def generic_tx(self):
 
 		#Removes skeleton nodes
-		query = """
-			MATCH (n)
-            WHERE size(keys(n))=1
-            DETACH DELETE (n)
-		"""
-		Transaction.deleteTransaction(self, query)
+		#query = """
+		#	MATCH (n)
+		#	WHERE size(keys(n))=1
+		#	DETACH DELETE (n)
+		#"""
+		#Transaction.deleteTransaction(self, query)
 
-        # remove all nodes that do not have any edges
-        query2 = """
+		# remove all nodes that do not have any edges
+		query = """
 			MATCH (n)
 			WHERE size((n)--())=0
 			DELETE (n)
 		"""
-		Transaction.deleteTransaction(self, query2)
+		Transaction.deleteTransaction(self, query)
