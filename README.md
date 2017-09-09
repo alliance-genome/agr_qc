@@ -6,8 +6,9 @@ This repo will also generating reports on the pre_QC, post_QC database and the e
 
 ## Development
 
-First you will need a database to pull from to create the queries
+These two commands will run the code with docker compose.
 
 ```bash
-docker pull agrdocker/agr_neo4j_nqc_data_image:0.6.42
+make startdb
+make run
 ```
