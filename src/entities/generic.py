@@ -18,9 +18,8 @@ class GenericEntities(object):
         query = """
             MATCH (n)
             WHERE size((n)--())=0
-            WITH n, COLLECT(distinct labels(n)) AS label, n.primaryKey AS primaryKey
+            WITH n, COLLECT(DISTINCT labels(n)) AS label, n.primaryKey AS primaryKey
             DELETE (n)
-            //UNWIND labels as label
             RETURN label, primaryKey
         """
         Transaction.deleteTransaction(self, query)
