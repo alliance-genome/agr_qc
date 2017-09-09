@@ -7,9 +7,6 @@ startdb:
 execdb: startdb
 	docker exec -ti neo4j.qc bin/cypher-shell
 
-pull:
-	docker pull agrdocker/agr_neo4j_nqc_data_image:develop
-
 removedb:
 	docker-compose down -v
 
