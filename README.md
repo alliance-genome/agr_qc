@@ -12,3 +12,11 @@ These two commands will run the code with docker compose.
 make startdb
 make run
 ```
+
+### Reports
+
+#### Orthology
+
+```bash
+python generage-orthology-report.py <output-orthology-filename>
+```
