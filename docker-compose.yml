@@ -3,7 +3,7 @@ version: "2"
 services:
   neo4j.qc:
     container_name: neo4j.qc
-    image: agrdocker/agr_neo4j_qc_data_image:develop
+    image: agrdocker/agr_neo4j_qc_data_image
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -12,7 +12,7 @@ services:
     environment:
       - NEO4J_dbms_memory_heap_maxSize=4096
   agr_qc:
-    image: agrdocker/agr_qc_run:develop
+    image: agrdocker/agr_qc_run:latest
     networks:
       - esnet
     environment:

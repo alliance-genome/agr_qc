@@ -1,5 +1,5 @@
 build:
-	docker build -t agrdocker/agr_qc_run:develop .
+	docker build -t agrdocker/agr_qc_run:latest .
 
 startdb:
 	docker-compose up -d neo4j.qc
@@ -23,3 +23,7 @@ updatedb:
 	sleep 10
 	docker build -t agrdocker/agr_qc_run:latest .
 	docker-compose up agr_qc
+
+.PHONY: run-bash
+run-bash:
+	docker run -v ${PWD}:/app -it agrdocker/neo4j.qc /bin/bash
