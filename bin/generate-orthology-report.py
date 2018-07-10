@@ -2,7 +2,7 @@ import sys
 
 from neo4j.v1 import GraphDatabase
 
-# USAGE python bin/generateorthology-report.py <output-dir>
+# USAGE python bin/generateorthology-report.py <output-file>
 
 uri = "bolt://localhost:7687"
 driver = GraphDatabase.driver(uri)
