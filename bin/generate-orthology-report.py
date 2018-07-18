@@ -52,10 +52,10 @@ with driver.session() as session:
                                 MATCH (algorithm:OrthoAlgorithm)-[m:MATCHED]-(ogj:OrthologyGeneJoin)-[association:ASSOCIATION]-(gene1)
                                 WITH algorithm, ogj, gene1, gene2, o,count(DISTINCT algorithm.name) as numAlgorithm
                                 WHERE ogj.primaryKey = o.primaryKey
-                                      AND numAlgorithm >= 3
-                                      OR algorithm.name = "ZFIN"
-                                      OR algorithm.name = "HGNC"
-                                      OR (numAlgorithm = 2 AND o.isBestScore = True and o.isBestRevScore = True)
+                                      AND (numAlgorithm >= 3
+                                           OR algorithm.name = "ZFIN"
+                                           OR algorithm.name = "HGNC"
+                                           OR (numAlgorithm = 2 AND o.isBestScore = True and o.isBestRevScore = True))
                                 OPTIONAL MATCH (algorithm2:OrthoAlgorithm)-[m2:MATCHED]-(ogj2:OrthologyGeneJoin)-[association2:ASSOCIATION]-(gene1)
                                 WHERE ogj2.primaryKey = o.primaryKey
                                 OPTIONAL MATCH (algorithm3:OrthoAlgorithm)-[m3:NOT_CALLED]-(ogj3:OrthologyGeneJoin)-[ASSOCIATION]-(gene1)
