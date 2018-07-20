@@ -41,55 +41,54 @@ with driver.session() as session:
 #                                     AND gene2.modGlobalId = "FB:FBgn0036980"
 #                                      gene1.taxonId = "NCBITaxon:9606"
 
-    orthology_file.write( "Gene1ID\tGene1Symbol\tGene2ID\tGene2Symbol\tAlgorithms\tAlgorithmsMatch\tOutOfAlgorithms\tIsBestScore\tIsBestRevScore\n")
+    orthology_file.write( "Gene1ID\tGene1Symbol\tGene1SpeciesTaxonID\tGene1SpeciesName\tGene2ID\tGene2Symbol\tGene1SpeciesTaxonID\tGene1SpeciesName\tAlgorithms\tAlgorithmsMatch\tOutOfAlgorithms\tIsBestScore\tIsBestRevScore\n")
  
     orthologList = set()
 
     with session.begin_transaction() as tx:
-        for record in tx.run("""MATCH (gene1:Gene)-[o:ORTHOLOGOUS]->(gene2:Gene)
-                                WHERE (o.isBestScore = True OR o.isBestRevScore = True)
-                                WITH gene1, gene2, o
-                                MATCH (algorithm:OrthoAlgorithm)-[m:MATCHED]-(ogj:OrthologyGeneJoin)-[association:ASSOCIATION]-(gene1)
-                                WITH algorithm, ogj, gene1, gene2, o,count(DISTINCT algorithm.name) as numAlgorithm
-                                WHERE ogj.primaryKey = o.primaryKey
-                                      AND numAlgorithm >= 3
-                                      OR algorithm.name = "ZFIN"
-                                      OR algorithm.name = "HGNC"
-                                      OR (numAlgorithm = 2 AND o.isBestScore = True and o.isBestRevScore = True)
-                                OPTIONAL MATCH (algorithm2:OrthoAlgorithm)-[m2:MATCHED]-(ogj2:OrthologyGeneJoin)-[association2:ASSOCIATION]-(gene1)
-                                WHERE ogj2.primaryKey = o.primaryKey
-                                OPTIONAL MATCH (algorithm3:OrthoAlgorithm)-[m3:NOT_CALLED]-(ogj3:OrthologyGeneJoin)-[ASSOCIATION]-(gene1)
-                                WHERE ogj3.primaryKey = o.primaryKey
-                                RETURN gene1.primaryKey AS gene1ID,
-                                       gene1.symbol AS gene1Symbol,
-                                       gene2.primaryKey AS gene2ID,
-                                       gene2.symbol AS gene2Symbol,
-                                       collect(algorithm2.name) as algorithms,
-                                       count(DISTINCT algorithm2.name) as numAlgorithmMatch,
-                                       count(DISTINCT algorithm3.name) as numAlgorithmNotCalled,
-                                       toString(o.isBestScore) as best,
-                                       toString(o.isBestRevScore) as bestRev"""):
-            algorithms = "|".join(set(record["algorithms"]))
-            numAlgorithmMatch = str(record["numAlgorithmMatch"])
-            numAlgorithm = 12 - record["numAlgorithmNotCalled"]
-            numAlgorithm = str(numAlgorithm)
-            best = record["best"]
-            bestRev = record["bestRev"]
-            matchStr = record["gene2ID"] + "-" + record["gene1ID"]
-
-            if matchStr in orthologList: continue
-            
-            revMatchStr = record["gene1ID"] + "-" + record["gene2ID"] 
-            orthologList.add(revMatchStr)
-
+        for record in tx.run("""MATCH (species1)<-[sa:FROM_SPECIES]-(gene1:Gene)-[o:ORTHOLOGOUS]->(gene2:Gene)-[sa2:FROM_SPECIES]->(species2:Species)
+WHERE (o.isBestScore = True OR o.isBestRevScore = True)
+    AND gene1.taxonId = "NCBITaxon:9606"
+WITH gene1,species1, gene2, species2, o
+MATCH (algorithm:OrthoAlgorithm)-[m:MATCHED]-(ogj:OrthologyGeneJoin)-[association:ASSOCIATION]-(gene1)
+WITH ogj, gene1, species1, gene2, species2, o, collect(DISTINCT algorithm.name) as Algorithms
+WHERE ogj.primaryKey = o.primaryKey
+      AND (size(Algorithms) >= 3
+           OR "ZFIN" IN Algorithms
+           OR "HGNC" IN Algorithms
+           OR (size(Algorithms) = 2 AND o.isBestScore = True and o.isBestRevScore = True))
+OPTIONAL MATCH (algorithm2:OrthoAlgorithm)-[m2:MATCHED]-(ogj2:OrthologyGeneJoin)-[association2:ASSOCIATION]-(gene1)
+WHERE ogj2.primaryKey = o.primaryKey
+OPTIONAL MATCH (algorithm3:OrthoAlgorithm)-[m3:NOT_MATCHED]-(ogj3:OrthologyGeneJoin)-[ASSOCIATION]-(gene1)
+WHERE ogj3.primaryKey = o.primaryKey
+RETURN gene1.primaryKey AS gene1ID,
+       gene1.symbol AS gene1Symbol,
+       gene2.primaryKey AS gene2ID,
+       gene2.symbol AS gene2Symbol,
+       Algorithms,
+       collect(algorithm2.name) AS algorithms,
+       count(DISTINCT algorithm2.name) AS numAlgorithmMatch,
+       count(DISTINCT algorithm3.name) AS numAlgorithmNotMatched,
+       toString(o.isBestScore) AS best,
+       toString(o.isBestRevScore) AS bestRev,
+       species1.primaryKey AS species1TaxonID,
+       species1.name AS species1Name,
+       species2.primaryKey AS species2TaxonID,
+       species2.name AS species2Name"""):
+            algorithms = "|".join(set(record["Algorithms"]))
+            numAlgorithm = record["numAlgorithmMatch"] + record["numAlgorithmNotMatched"]
             orthology_file.write("\t".join([record["gene1ID"],
                                             record["gene1Symbol"],
+                                            record["species1TaxonID"],
+                                            record["species1Name"],
                                             record["gene2ID"],
                                             record["gene2Symbol"],
+                                            record["species2TaxonID"],
+                                            record["species2Name"],
                                             algorithms,
-                                            numAlgorithmMatch,
-                                            numAlgorithm,
-                                            best,
-                                            bestRev]) + "\n")
+                                            str(record["numAlgorithmMatch"]),
+                                            str(numAlgorithm),
+                                            record["best"],
+                                            record["bestRev"]]) + "\n")
 
     orthology_file.close()
