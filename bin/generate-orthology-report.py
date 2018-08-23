@@ -47,28 +47,18 @@ with driver.session() as session:
 
     with session.begin_transaction() as tx:
         for record in tx.run("""MATCH (species1)<-[sa:FROM_SPECIES]-(gene1:Gene)-[o:ORTHOLOGOUS]->(gene2:Gene)-[sa2:FROM_SPECIES]->(species2:Species)
-WHERE (o.isBestScore = True OR o.isBestRevScore = True)
-    AND gene1.taxonId = "NCBITaxon:9606"
-WITH gene1,species1, gene2, species2, o
-MATCH (algorithm:OrthoAlgorithm)-[m:MATCHED]-(ogj:OrthologyGeneJoin)-[association:ASSOCIATION]-(gene1)
-WITH ogj, gene1, species1, gene2, species2, o, collect(DISTINCT algorithm.name) as Algorithms
+WHERE o.strictFilter
+OPTIONAL MATCH (algorithm:OrthoAlgorithm)-[m:MATCHED]-(ogj:OrthologyGeneJoin)-[association:ASSOCIATION]-(gene1)
 WHERE ogj.primaryKey = o.primaryKey
-      AND (size(Algorithms) >= 3
-           OR "ZFIN" IN Algorithms
-           OR "HGNC" IN Algorithms
-           OR (size(Algorithms) = 2 AND o.isBestScore = True and o.isBestRevScore = True))
-OPTIONAL MATCH (algorithm2:OrthoAlgorithm)-[m2:MATCHED]-(ogj2:OrthologyGeneJoin)-[association2:ASSOCIATION]-(gene1)
+OPTIONAL MATCH (algorithm2:OrthoAlgorithm)-[m2:NOT_MATCHED]-(ogj2:OrthologyGeneJoin)-[ASSOCIATION]-(gene1)
 WHERE ogj2.primaryKey = o.primaryKey
-OPTIONAL MATCH (algorithm3:OrthoAlgorithm)-[m3:NOT_MATCHED]-(ogj3:OrthologyGeneJoin)-[ASSOCIATION]-(gene1)
-WHERE ogj3.primaryKey = o.primaryKey
 RETURN gene1.primaryKey AS gene1ID,
        gene1.symbol AS gene1Symbol,
        gene2.primaryKey AS gene2ID,
        gene2.symbol AS gene2Symbol,
-       Algorithms,
-       collect(algorithm2.name) AS algorithms,
-       count(DISTINCT algorithm2.name) AS numAlgorithmMatch,
-       count(DISTINCT algorithm3.name) AS numAlgorithmNotMatched,
+       collect(DISTINCT algorithm.name) as Algorithms,
+       count(DISTINCT algorithm.name) AS numAlgorithmMatch,
+       count(DISTINCT algorithm2.name) AS numAlgorithmNotMatched,
        toString(o.isBestScore) AS best,
        toString(o.isBestRevScore) AS bestRev,
        species1.primaryKey AS species1TaxonID,
