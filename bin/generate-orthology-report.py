@@ -23,13 +23,13 @@ with driver.session() as session:
     header = """#########################################################################
 #
 # Ortholog File
-# Source: Alliance of Genomic Resources (Alliance)
+# Source: Alliance of Genome Resources (Alliance)
 # Filter: stringent
 # Filter Details:
 #   Ortholog needs to be called by at least 3 Algorithms
 #        or is being called by either ZFIN or HGNC algorithms
 #        and either is best score or is best reverse score
-#   or ortholog is called by 2 algorithms and is either best score or best reverse score
+#   or ortholog is called by 2 algorithms and is best score and best reverse score
 # Datebase Version: {databaseVersion}
 # Date: {datetimeNow}
 #
