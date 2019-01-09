@@ -10,6 +10,9 @@ __pycache__/
 # C extensions
 *.so
 
+# reports
+reports/
+
 # Distribution / packaging
 .Python
 env/
