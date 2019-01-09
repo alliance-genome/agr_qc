@@ -96,9 +96,9 @@ RETURN count(entityTypes) AS frequency,
         if agrEnvironment != "local":
             print "Uploading to S3 bucket: ", bucketFolder
             if "AWS_ACCESS_KEY_ID" in os.environ and "AWS_SECRET_ACCESS_KEY" in os.environ:
-                 client = boto3.client('s3', aws_access_key_id = os.environ["AWS_ACCESS_KEY_ID"], aws_secret_access_key = os.environ["AWS_SECRET_ACCESS_KEY"])
-                 transfer = S3Transfer(client)
-                 transfer.upload_file(filePath, bucket, bucketFolder + "/" + filename)
+                client = boto3.client('s3', aws_access_key_id = os.environ["AWS_ACCESS_KEY_ID"], aws_secret_access_key = os.environ["AWS_SECRET_ACCESS_KEY"])
+                transfer = S3Transfer(client)
+                transfer.upload_file(filePath, bucket, bucketFolder + "/" + filename)
             else:
                 print "ERROR: access keys AWS_ACCESS_KEY_ID and/or AWS_SECRET_ACCESS_KEY needs to be set"
                 exit(1)
