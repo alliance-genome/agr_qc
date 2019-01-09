@@ -28,7 +28,6 @@ from neo4j.v1 import GraphDatabase
 # OPTIONAL: $AGR_ENV  (build, test, stage, prod)
 #           If not set will default to creating local file
 #           $AGR_DB_URI bolt url
-#           $AWS_ACCESS_KEY
 
 bucket = "agr-db-reports"
 bucketFolder = "qc-database-summary"
