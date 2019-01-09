@@ -23,3 +23,15 @@ updatedb:
 	sleep 10
 	docker build -t agrdocker/agr_qc_run:latest .
 	docker-compose up agr_qc
+
+.PHONY: create-db-summary
+create-db-summary: $(call print-help,run,"Run the application in docker")
+	docker run \
+		--name db-summary \
+		-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+		-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+		-e AGR_VERSION=${AGR_VERSION} \
+		-e AGR_ENV-${AGR_ENV} \
+		-t agrdocker/agr_qc_run:develop \
+		/bin/bash -c "python3 \-c bin/generate-database-summary.py"
+

@@ -5,9 +5,6 @@ import json
 from boto3.s3.transfer import S3Transfer
 import boto3
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
-
 from dateutil.parser import parse
 from datetime import datetime
 from time import gmtime, strftime
@@ -31,12 +28,10 @@ from neo4j.v1 import GraphDatabase
 
 bucket = "agr-db-reports"
 bucketFolder = "qc-database-summary"
-
 uri = "bolt://localhost:7687"
-if "AGR_DB_URI" in os.environ:
-    uri = os.environ("AGR_DB_URI")
 
-driver = GraphDatabase.driver(uri)
+if "AGR_DB_URI" in os.environ:
+    uri = os.environ["AGR_DB_URI"]
 
 if "AGR_VERSION" in os.environ:
     agrVersion = os.environ['AGR_VERSION']
@@ -44,10 +39,9 @@ else:
     print("Environment variable not set: AGR_VERSION")
     exit(1)
 
-
 if "AGR_ENV" in os.environ:
     agrEnvironment = os.environ['AGR_ENV']
-    print "Using environment: ", agrEnvironment
+    print("Using environment: ", agrEnvironment)
 else:
     agrEnvironment = None
 
@@ -56,6 +50,7 @@ datetimeNow = strftime("%Y-%m-%d_%H_%M_%S", gmtime())
 if agrEnvironment:
     filename = "alliance-db-summary-" + agrEnvironment + "-" + agrVersion + "-" + datetimeNow + ".json"
 
+driver = GraphDatabase.driver(uri)
 with driver.session() as session:
     summary = {}
 
@@ -80,28 +75,30 @@ RETURN count(entityTypes) AS frequency,
                 else:
                     entities[entityTypes[0]] = {entityTypes[1]: frequency}
 
-    entityKeys = entities.keys()
+    entityKeys = list(entities.keys()).copy()
     for key in entityKeys:
         if not isinstance(entities[key], int):
             if len(entities[key].keys()) == 1:
-                del entities[key]
+                subKey = list(entities[key].keys())[0]
+                if subKey in entities:
+                    del entities[key]
 
     summary = { "overview": entities }
 
     if agrEnvironment:
         filePath = "reports/" + filename
         with open(filePath, 'w') as f:
-            print "Writing summary to file: ", filePath
+            print("Writing summary to file: ", filePath)
             f.write(json.dumps(summary, indent=4, sort_keys=True))
         if agrEnvironment != "local":
-            print "Uploading to S3 bucket: ", bucketFolder
+            print("Uploading to S3 bucket: ", bucketFolder)
             if "AWS_ACCESS_KEY_ID" in os.environ and "AWS_SECRET_ACCESS_KEY" in os.environ:
                 client = boto3.client('s3', aws_access_key_id = os.environ["AWS_ACCESS_KEY_ID"], aws_secret_access_key = os.environ["AWS_SECRET_ACCESS_KEY"])
                 transfer = S3Transfer(client)
                 transfer.upload_file(filePath, bucket, bucketFolder + "/" + filename)
             else:
-                print "ERROR: access keys AWS_ACCESS_KEY_ID and/or AWS_SECRET_ACCESS_KEY needs to be set"
+                print("ERROR: access keys AWS_ACCESS_KEY_ID and/or AWS_SECRET_ACCESS_KEY needs to be set")
                 exit(1)
 
-        else:
-            print(json.dumps(summary, indent=4, sort_keys=True))
+    else:
+        print(json.dumps(summary, indent=4, sort_keys=True))
