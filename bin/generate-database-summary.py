@@ -26,7 +26,7 @@ from neo4j.v1 import GraphDatabase
 #           If not set will default to creating local file
 #           $AGR_DB_URI bolt url
 
-bucket = "mod-datadumps"
+bucket = "agr-db-reports"
 bucketFolder = "qc-database-summary"
 uri = "bolt://localhost:7687"
 
