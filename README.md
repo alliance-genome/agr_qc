@@ -13,6 +13,14 @@ make startdb
 make run
 ```
 
+### Reports
+
+#### Orthology
+
+```bash
+python generage-orthology-report.py <output-orthology-filename>
+```
+
 ## Generating AGR reports
 
 This script is used to generate database summary statistics. If and environment is not set it will output the json to standard out. If the envronement is set it will create a file in the reports folder. If the environment is not "local" it will also upload the report to the S3 bucket "agr-db-reports/qc-database-summary"
