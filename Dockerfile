@@ -1,4 +1,4 @@
-FROM agrdocker/agr_python_env:latest
+FROM agrdocker/agr_base_linux_env:latest
 
 ENV AWS_SECRET_ACCESS_KEY=\
     AWS_ACCESS_KEY_ID= \
