@@ -8,9 +8,9 @@ else:
     host = "localhost"
 
 if "NEO4J_PORT" in os.environ:
-    port = int(os.environ['NEO4J_PORT'])
+    port = os.environ['NEO4J_PORT']
 else:
-    port = 7687
+    port = "7687"
 
 uri = "bolt://" + host + ":" + port
 
