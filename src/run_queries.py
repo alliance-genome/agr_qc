@@ -3,7 +3,7 @@ import os
 
 
 if "NEO4J_HOST" in os.environ:
-    host = int(os.environ['NEO4J_HOST'])
+    host = os.environ['NEO4J_HOST']
 else:
     host = "localhost"
 
