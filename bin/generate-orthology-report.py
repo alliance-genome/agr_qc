@@ -4,7 +4,7 @@ from dateutil.parser import parse
 from datetime import datetime
 from time import gmtime, strftime
 
-from neo4j.v1 import GraphDatabase
+from neo4j import GraphDatabase
 
 # USAGE python bin/generateorthology-report.py <output-file>
 
