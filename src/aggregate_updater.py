@@ -1,7 +1,7 @@
 from entities import *
 from entities.transactions import *
 import time
-from neo4j.v1 import GraphDatabase
+from neo4j import GraphDatabase
 
 class AggregateUpdater(object):
 	def __init__(self, uri):
