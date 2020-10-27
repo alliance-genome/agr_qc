@@ -1,4 +1,5 @@
-FROM agrdocker/agr_base_linux_env:latest
+ARG ALLIANCE_RELEASE=latest
+FROM agrdocker/agr_base_linux_env:${ALLIANCE_RELEASE}
 
 ENV AWS_SECRET_ACCESS_KEY=\
     AWS_ACCESS_KEY_ID= \
