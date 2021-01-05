@@ -13,6 +13,10 @@ endif
 build: registry-docker-login
 	docker build -t ${REG}/agr_qc_run:develop --build-arg REG=${REG} .
 
+#TODO: Remove all use of docker image `agr_neo4j_qc_data_image`.
+#      That means all use of the docker-compose service neo4j.qc is potentially to be deprecated as well,
+#      which means most this Makefile is currently non-functional and to be redefined.
+
 startdb:
 	REG=${REG} docker-compose up -d neo4j.qc
 

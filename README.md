@@ -4,6 +4,10 @@ Thid repo is used for removing data in the database that does not meet the stand
 
 This repo will also generating reports on the pre_QC, post_QC database and the effects of the changes on the database. The results of these tests will be made available to the AGR and lists will be sent to individual MODs / data providers. In this way we will provide feedback that can be used to make improvements to data and process used to generate the database.
 
+>**Note:**
+>The [Makefile](./Makefile) in this repo is currently defunct and is to be updated/redefined.  
+>Therefor, any instructions below using make are currently void. Contact other AGR developers for help when needed.
+
 ## Development
 
 These two commands will run the code with docker compose.
