@@ -1,8 +1,24 @@
-build:
-	docker build -t agrdocker/agr_qc_run:develop .
+REG := 100225593120.dkr.ecr.us-east-1.amazonaws.com
+
+registry-docker-login:
+ifneq ($(shell echo ${REG} | egrep "ecr\..+\.amazonaws\.com"),)
+	@$(eval DOCKER_LOGIN_CMD=aws)
+ifneq (${AWS_PROFILE},)
+	@$(eval DOCKER_LOGIN_CMD=${DOCKER_LOGIN_CMD} --profile ${AWS_PROFILE})
+endif
+	@$(eval DOCKER_LOGIN_CMD=${DOCKER_LOGIN_CMD} ecr get-login-password | docker login -u AWS --password-stdin https://${REG})
+	${DOCKER_LOGIN_CMD}
+endif
+
+build: registry-docker-login
+	docker build -t ${REG}/agr_qc_run:develop --build-arg REG=${REG} .
+
+#TODO: Remove all use of docker image `agr_neo4j_qc_data_image`.
+#      That means all use of the docker-compose service neo4j.qc is potentially to be deprecated as well,
+#      which means most this Makefile is currently non-functional and to be redefined.
 
 startdb:
-	docker-compose up -d neo4j.qc
+	REG=${REG} docker-compose up -d neo4j.qc
 
 execdb: startdb
 	docker exec -ti neo4j.qc bin/cypher-shell
@@ -11,18 +27,18 @@ removedb:
 	docker-compose down -v
 
 run: build
-	docker-compose up agr_qc
+	REG=${REG} docker-compose up agr_qc
 
 bash:
-	docker-compose up agr_qc bash
+	REG=${REG} docker-compose up agr_qc bash
 
-updatedb:
-	docker-compose up -d neo4j.qc
+updatedb: registry-docker-login
+	REG=${REG} docker-compose up -d neo4j.qc
 	docker-compose down -v
-	docker-compose up -d neo4j.qc
+	REG=${REG} docker-compose up -d neo4j.qc
 	sleep 10
-	docker build -t agrdocker/agr_qc_run:latest .
-	docker-compose up agr_qc
+	docker build -t ${REG}/agr_qc_run:latest --build-arg REG=${REG} .
+	REG=${REG} docker-compose up agr_qc
 
 .PHONY: create-db-summary
 create-db-summary: $(call print-help,run,"Run the application in docker")
@@ -34,6 +50,6 @@ create-db-summary: $(call print-help,run,"Run the application in docker")
 		-e AGR_VERSION=${AGR_VERSION} \
 		-e AGR_ENV=${AGR_ENV} \
 		-e AGR_DB_URI=${AGR_DB_URI} \
-		-t agrdocker/agr_qc_run:develop \
+		-t ${REG}/agr_qc_run:develop \
 		/bin/bash -c "python3 bin/generate-database-summary.py"
 
