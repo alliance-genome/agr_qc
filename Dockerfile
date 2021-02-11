@@ -1,7 +1,7 @@
 ARG REG=agrdocker
-ARG DOCKER_IMAGE_TAG=latest
+ARG DOCKER_PULL_TAG=latest
 
-FROM ${REG}/agr_base_linux_env:${DOCKER_IMAGE_TAG}
+FROM ${REG}/agr_base_linux_env:${DOCKER_PULL_TAG}
 
 ENV AWS_SECRET_ACCESS_KEY=\
     AWS_ACCESS_KEY_ID= \
