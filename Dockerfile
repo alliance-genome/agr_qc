@@ -1,6 +1,7 @@
-ARG ALLIANCE_RELEASE=latest
 ARG REG=agrdocker
-FROM ${REG}/agr_base_linux_env:${ALLIANCE_RELEASE}
+ARG DOCKER_IMAGE_TAG=latest
+
+FROM ${REG}/agr_base_linux_env:${DOCKER_IMAGE_TAG}
 
 ENV AWS_SECRET_ACCESS_KEY=\
     AWS_ACCESS_KEY_ID= \

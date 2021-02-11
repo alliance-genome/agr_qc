@@ -1,4 +1,5 @@
 REG := 100225593120.dkr.ecr.us-east-1.amazonaws.com
+DOCKER_IMAGE_TAG := latest
 
 registry-docker-login:
 ifneq ($(shell echo ${REG} | egrep "ecr\..+\.amazonaws\.com"),)
@@ -37,7 +38,7 @@ updatedb: registry-docker-login
 	docker-compose down -v
 	REG=${REG} docker-compose up -d neo4j.qc
 	sleep 10
-	docker build -t ${REG}/agr_qc_run:latest --build-arg REG=${REG} .
+	docker build -t ${REG}/agr_qc_run:latest --build-arg REG=${REG} --build-arg DOCKER_IMAGE_TAG=${DOCKER_IMAGE_TAG} .
 	REG=${REG} docker-compose up agr_qc
 
 .PHONY: create-db-summary
